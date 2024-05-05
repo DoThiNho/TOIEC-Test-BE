@@ -1,12 +1,13 @@
 require('dotenv').config();
 const { StatusCodes, getReasonPhrase } = require('http-status-codes');
-const Test = require('../models/test.model');
-const Part = require('../models/part.model');
-const Question = require('../models/question.model');
+const Test = require('../models/tests.model');
+const Part = require('../models/parts.model');
+const Question = require('../models/questions.model');
 
 exports.getTests = async (req, res) => {
   try {
-    const tests = await Test.getAllTest();
+    const { search, page, limit } = req.query;
+    const tests = await Test.getTests(search, page, limit);
     res.status(StatusCodes.OK).send({ message: 'Get list test successfully', tests });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({

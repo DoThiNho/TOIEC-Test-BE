@@ -1,14 +1,16 @@
 require('dotenv').config();
 const bcrypt = require('bcrypt');
+var jwt = require('jsonwebtoken');
+const moment = require('moment');
+const { v4: uuid } = require('uuid');
 const { StatusCodes, getReasonPhrase } = require('http-status-codes');
-const User = require('../models/user.model');
+const User = require('../models/users.model');
 
 exports.register = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, role_id, first_name, last_name, phone_number, image } = req.body;
 
     const user = await User.findByEmail(email);
-
     if (user) {
       return res
         .status(StatusCodes.CONFLICT)
@@ -17,13 +19,25 @@ exports.register = async (req, res) => {
 
     const salt = await bcrypt.genSalt(Number(process.env.SALT));
     const hashPassword = await bcrypt.hash(password, salt);
-
-    await User.create({
+    const newUser = await User.create({
       ...req.body,
-      password: hashPassword
+      id: uuid(),
+      password: hashPassword,
+      register_at: moment().format('YYYY-MM-DD HH:mm')
     });
-    res.status(StatusCodes.CREATED).send({ message: 'User created successfully' });
+    const id = uuid();
+    res.status(StatusCodes.CREATED).send({
+      message: 'User created successfully',
+      token: jwt.sign(
+        {
+          id
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: 60 * 60 }
+      )
+    });
   } catch (error) {
+    console.log({ error });
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
       error: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR)
     });
@@ -34,24 +48,30 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findByEmail({ email });
-
+    const user = await User.findByEmail(email);
     if (!user) {
       return res.status(StatusCodes.CONFLICT).send({ message: 'Email does not exist!' });
     }
-
     const validPassword = await bcrypt.compare(password, user.password);
+    console.log({ user });
 
     if (!validPassword)
-      return res.status(StatusCodes.UNAUTHORIZED).send({ message: 'Invalid email or password' });
+      return res.status(StatusCodes.UNAUTHORIZED).send({ message: 'Password is incorrect' });
 
     req.session.loggedin = true;
     req.session.user = user;
     res.status(StatusCodes.OK).send({
-      data: user,
+      token: jwt.sign(
+        {
+          id: user.id
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: 60 * 60 }
+      ),
       message: 'Logged in successfully'
     });
   } catch (error) {
+    console.log({ error });
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
       error: getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR)
     });

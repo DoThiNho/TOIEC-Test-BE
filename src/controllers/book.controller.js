@@ -1,11 +1,11 @@
 require('dotenv').config();
 const { StatusCodes, getReasonPhrase } = require('http-status-codes');
-const Book = require('../models/book.model');
+const Book = require('../models/books.model');
 
 exports.getBooks = async (req, res) => {
   try {
-    const books = await Book.getAllBook();
-    console.log(books);
+    const { search, page, limit } = req.query;
+    const books = await Book.getBooks(search, page, limit);
     res.status(StatusCodes.OK).send({ message: 'Get list book successfully', books });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
@@ -36,7 +36,6 @@ exports.updateBook = async (req, res) => {
   }
 };
 
-// Hàm xóa sách
 exports.deleteBook = async (req, res) => {
   try {
     const { id } = req.params;
@@ -50,11 +49,10 @@ exports.deleteBook = async (req, res) => {
   }
 };
 
-// Hàm tìm kiếm sách theo tiêu đề
 exports.searchBooksByTitle = async (req, res) => {
   try {
-    const { title } = req.query; // Lấy tiêu đề sách từ query params
-    const books = await Book.find({ title: { $regex: title, $options: 'i' } }); // Sử dụng phương thức find của model Book với điều kiện tìm kiếm
+    const { title } = req.query;
+    const books = await Book.find({ title: { $regex: title, $options: 'i' } });
     if (books.length === 0) {
       return res
         .status(StatusCodes.NOT_FOUND)
