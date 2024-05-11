@@ -1,6 +1,6 @@
 require('dotenv').config();
 const bcrypt = require('bcrypt');
-var jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 const moment = require('moment');
 const { v4: uuid } = require('uuid');
 const { StatusCodes, getReasonPhrase } = require('http-status-codes');
@@ -33,7 +33,7 @@ exports.register = async (req, res) => {
           id
         },
         process.env.JWT_SECRET,
-        { expiresIn: 60 * 60 }
+        { expiresIn: 24 * 60 * 60 }
       )
     });
   } catch (error) {
@@ -52,11 +52,12 @@ exports.login = async (req, res) => {
     if (!user) {
       return res.status(StatusCodes.CONFLICT).send({ message: 'Email does not exist!' });
     }
-    const validPassword = await bcrypt.compare(password, user.password);
-    console.log({ user });
+    if (user.password !== '') {
+      const validPassword = await bcrypt.compare(password, user.password);
 
-    if (!validPassword)
-      return res.status(StatusCodes.UNAUTHORIZED).send({ message: 'Password is incorrect' });
+      if (!validPassword)
+        return res.status(StatusCodes.UNAUTHORIZED).send({ message: 'Password is incorrect' });
+    }
 
     req.session.loggedin = true;
     req.session.user = user;

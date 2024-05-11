@@ -1,4 +1,4 @@
-const connection = require('../config/db.config');
+const query = require('../database/db');
 
 const Part = function (part) {
   this.id = part.id;
@@ -8,9 +8,14 @@ const Part = function (part) {
   this.audio_link = part.audio_link;
 };
 
+Part.getPartByPartId = (id) => {
+  const sql = 'SELECT * FROM parts WHERE id = ?';
+  return query(sql, [id]);
+};
+
 Part.getPartsByTestId = (testId) => {
-  const sql = `SELECT * FROM part WHERE test_id`;
-  return query(sql), [testId];
+  const sql = 'SELECT * FROM parts WHERE test_id = ?';
+  return query(sql, [testId]);
 };
 
 module.exports = Part;

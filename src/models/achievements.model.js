@@ -1,26 +1,24 @@
 const query = require('../database/db');
 
 const Achievements = function (achievement) {
-  this.title = book.title;
+  this.id = achievement.id;
+  this.user_id = achievement.user_id;
+  this.test_id = achievement.test_id;
+  this.parts = achievement.parts;
+  this.start_time = achievement.start_time;
+  this.complete_time = achievement.complete_time;
+  this.total_correct = achievement.total_correct;
+  this.total_questions = achievement.total_questions;
 };
 
-Book.getBooks = (searchTerm, page, limit) => {
-  let sql = 'SELECT * FROM book';
-  if (searchTerm) {
-    sql += ` WHERE title LIKE '%${searchTerm}%'`;
-  }
-  if (limit && page) {
-    const offset = (page - 1) * limit;
-    sql += ` LIMIT ${limit} OFFSET ${offset}`;
-  } else if (limit) {
-    sql += ` LIMIT ${limit}`;
-  }
-  return query(sql);
+Achievements.create = (newAchievement) => {
+  const sql = 'INSERT INTO achievements SET ?';
+  return query(sql, [newAchievement]);
 };
 
-Book.addBook = async (newBook) => {
-  const sql = 'INSERT INTO book SET ?';
-  return query(sql, newBook);
+Achievements.getAchievementsByUserIdAndTestId = (userId, testId) => {
+  const sql = 'SELECT * FROM achievements WHERE user_id = ? AND test_id = ?';
+  return query(sql, [userId, testId]);
 };
 
-module.exports = Book;
+module.exports = Achievements;

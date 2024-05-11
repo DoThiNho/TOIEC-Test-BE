@@ -12,6 +12,8 @@ const authRouter = require('./src/routers/auth.router');
 const userRouter = require('./src/routers/user.router');
 const bookRouter = require('./src/routers/book.router');
 const testRouter = require('./src/routers/test.router');
+const achievementRouter = require('./src/routers/achievement.router');
+const questionRouter = require('./src/routers/question.router');
 
 app.use(
   cors({
@@ -39,6 +41,8 @@ app.use('/api/auth', authRouter);
 app.use('/api/users', userRouter);
 app.use('/api/books', bookRouter);
 app.use('/api/tests', testRouter);
+app.use('/api/results', achievementRouter);
+app.use('/api/questions', questionRouter);
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);

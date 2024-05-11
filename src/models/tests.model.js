@@ -8,7 +8,7 @@ const Test = function (test) {
 };
 
 Test.getTests = (searchTerm, page, limit) => {
-  let sql = 'SELECT * FROM test';
+  let sql = 'SELECT * FROM tests';
   if (searchTerm) {
     sql += ` WHERE title LIKE '%${searchTerm}%'`;
   }
@@ -22,13 +22,18 @@ Test.getTests = (searchTerm, page, limit) => {
 };
 
 Test.getTestById = (id) => {
-  const sql = `SELECT * FROM test WHERE id = ?`;
+  const sql = `SELECT * FROM tests WHERE id = ?`;
   return query(sql, [id]);
 };
 
 Test.getTestsByBookId = (bookId) => {
-  const sql = `SELECT * FROM test WHERE book_id =`;
+  const sql = `SELECT * FROM tests WHERE book_id =`;
   return query(sql, [bookId]);
+};
+
+Test.create = async (newTest) => {
+  const sql = 'INSERT INTO tests SET ?';
+  return query(sql, [newTest]);
 };
 
 module.exports = Test;

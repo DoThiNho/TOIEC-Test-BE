@@ -27,4 +27,15 @@ User.getUserById = (id) => {
   return query(sql, [id]);
 };
 
+User.updateUserById = (userData) => {
+  const { id, first_name, last_name, email, phone_number, image } = userData;
+  const sql = `UPDATE users SET first_name = ?, last_name = ?, email = ?, phone_number = ?, image = ? WHERE id = ?`;
+  return query(sql, [first_name, last_name, email, phone_number, image, id]);
+};
+
+User.setAvatarUser = (image, id) => {
+  const sql = 'UPDATE users SET image = ? WHERE id = ?';
+  return query(sql, [image, id]);
+};
+
 module.exports = User;
