@@ -49,7 +49,8 @@ exports.getTestById = async (req, res) => {
         id: test[0].id,
         title: test[0].title,
         book_title: book[0].title,
-        parts
+        parts,
+        audio_link: test[0].audio_link
       }
     });
   } catch (error) {

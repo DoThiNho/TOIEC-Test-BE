@@ -61,9 +61,15 @@ exports.getQuestionsByPartId = async (req, res) => {
       }
     }
     for (let question of questions) {
-      const file = await File.getFileById(question.file_id);
+      const fileImgs = [];
+      for (let id of question.file_id.split(',')) {
+        const file = await File.getFileById(id);
+        if (file[0]) {
+          fileImgs.push(file[0].image);
+        }
+      }
       const part = await Part.getPartByPartId(question.part_id);
-      question.image = file[0].image;
+      question.image = fileImgs.join(',');
       question.part_num = part[0].part_num;
     }
     res.status(StatusCodes.OK).send({

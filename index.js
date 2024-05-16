@@ -14,6 +14,7 @@ const bookRouter = require('./src/routers/book.router');
 const testRouter = require('./src/routers/test.router');
 const achievementRouter = require('./src/routers/achievement.router');
 const questionRouter = require('./src/routers/question.router');
+const fileRouter = require('./src/routers/file.router');
 
 app.use(
   cors({
@@ -43,6 +44,7 @@ app.use('/api/books', bookRouter);
 app.use('/api/tests', testRouter);
 app.use('/api/results', achievementRouter);
 app.use('/api/questions', questionRouter);
+app.use('/api/files', fileRouter);
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);

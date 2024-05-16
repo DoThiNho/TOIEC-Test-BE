@@ -16,6 +16,16 @@ Achievements.create = (newAchievement) => {
   return query(sql, [newAchievement]);
 };
 
+Achievements.getAchievements = (limit) => {
+  let sql = `SELECT * FROM achievements LIMIT ${limit}`;
+  return query(sql);
+};
+
+Achievements.getAchievementById = (id) => {
+  const sql = `SELECT * FROM achievements WHERE id = ?`;
+  return query(sql, [id]);
+};
+
 Achievements.getAchievementsByUserIdAndTestId = (userId, testId) => {
   const sql = 'SELECT * FROM achievements WHERE user_id = ? AND test_id = ?';
   return query(sql, [userId, testId]);
