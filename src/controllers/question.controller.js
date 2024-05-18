@@ -3,6 +3,8 @@ const { StatusCodes, getReasonPhrase } = require('http-status-codes');
 const Question = require('../models/questions.model');
 const File = require('../models/files.model');
 const Part = require('../models/parts.model');
+const Test = require('../models/tests.model');
+const Book = require('../models/books.model');
 const { v4: uuid } = require('uuid');
 
 exports.addQuestion = async (req, res) => {
@@ -72,10 +74,20 @@ exports.getQuestionsByPartId = async (req, res) => {
       question.image = fileImgs.join(',');
       question.part_num = part[0].part_num;
     }
+    const test = await Test.getTestById(id);
+    let book = {};
+    if (test[0]) {
+      book = await Book.getBookById(test[0].book_id);
+    }
     res.status(StatusCodes.OK).send({
       status: StatusCodes.OK,
       message: 'Get list question successfully',
-      data: questions
+      data: {
+        test_title: test[0].title,
+        book_title: book[0].title,
+        audio_link: test[0].audio_link,
+        questions
+      }
     });
   } catch (error) {
     console.error('Error:', error);

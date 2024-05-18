@@ -24,8 +24,6 @@ UserAnswer.create = (userAnswers) => {
     userAnswer.option
   ]);
 
-  console.log({ sql, params });
-
   return query(sql, [params]);
 };
 

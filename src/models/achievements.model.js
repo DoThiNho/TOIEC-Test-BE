@@ -16,8 +16,17 @@ Achievements.create = (newAchievement) => {
   return query(sql, [newAchievement]);
 };
 
-Achievements.getAchievements = (limit) => {
-  let sql = `SELECT * FROM achievements LIMIT ${limit}`;
+Achievements.getAchievements = (searchTerm, page, limit) => {
+  let sql = 'SELECT * FROM achievements';
+  if (searchTerm) {
+    sql += ` WHERE title LIKE '%${searchTerm}%'`;
+  }
+  if (limit && page) {
+    const offset = (page - 1) * limit;
+    sql += ` LIMIT ${limit} OFFSET ${offset}`;
+  } else if (limit) {
+    sql += ` LIMIT ${limit}`;
+  }
   return query(sql);
 };
 

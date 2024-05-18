@@ -28,8 +28,8 @@ exports.addAchievement = async (req, res) => {
 
 exports.getAchievements = async (req, res) => {
   try {
-    const { limit } = req.query;
-    const achievements = await Achievement.getAchievements(limit);
+    const { search, page, limit } = req.query;
+    const achievements = await Achievement.getAchievements(search, page, limit);
     res.status(StatusCodes.OK).send({
       status: StatusCodes.OK,
       message: 'Get list book successfully',

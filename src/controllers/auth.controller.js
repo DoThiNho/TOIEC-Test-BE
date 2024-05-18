@@ -67,7 +67,7 @@ exports.login = async (req, res) => {
           id: user.id
         },
         process.env.JWT_SECRET,
-        { expiresIn: 60 * 60 }
+        { expiresIn: 60 * 60 * 24 }
       ),
       message: 'Logged in successfully'
     });
