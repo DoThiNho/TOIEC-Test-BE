@@ -28,6 +28,7 @@ exports.register = async (req, res) => {
     const id = uuid();
     res.status(StatusCodes.CREATED).send({
       message: 'User created successfully',
+      user: { ...newUser },
       token: jwt.sign(
         {
           id
@@ -62,6 +63,7 @@ exports.login = async (req, res) => {
     req.session.loggedin = true;
     req.session.user = user;
     res.status(StatusCodes.OK).send({
+      user,
       token: jwt.sign(
         {
           id: user.id

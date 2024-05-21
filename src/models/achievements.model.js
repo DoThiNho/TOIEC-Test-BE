@@ -36,7 +36,7 @@ Achievements.getAchievementById = (id) => {
 };
 
 Achievements.getAchievementsByUserIdAndTestId = (userId, testId) => {
-  const sql = 'SELECT * FROM achievements WHERE user_id = ? AND test_id = ?';
+  const sql = 'SELECT * FROM achievements WHERE user_id = ? AND test_id = ? ORDER BY date DESC';
   return query(sql, [userId, testId]);
 };
 

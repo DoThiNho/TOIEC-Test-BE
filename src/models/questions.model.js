@@ -5,7 +5,6 @@ const Question = function (question) {
   this.test_id = question.test_id;
   this.part_id = question.part_id;
   this.question_title = question.question_title;
-  this.file_id = question.file_id;
   this.answer_a = question.answer_a;
   this.answer_b = question.answer_b;
   this.answer_c = question.answer_c;
@@ -21,6 +20,11 @@ Question.create = (newAchievement) => {
 Question.getQuestionsByTestId = (testId) => {
   const sql = `SELECT * FROM questions WHERE test_id = ?`;
   return query(sql, [testId]);
+};
+
+Question.getQuestionsByGroupId = (groupId) => {
+  const sql = `SELECT * FROM questions WHERE group_id = ?`;
+  return query(sql, [groupId]);
 };
 
 Question.getQuestionsByPartId = (partId) => {

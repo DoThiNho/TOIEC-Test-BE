@@ -75,7 +75,6 @@ exports.setAvatarUser = async (req, res) => {
           ...user[0],
           image: uploadResponse.url
         };
-        console.log('upload image: ', { userUpdate });
         await User.updateUserById(userUpdate);
         res.status(StatusCodes.OK).json({
           status: StatusCodes.OK,

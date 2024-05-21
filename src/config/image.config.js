@@ -2,7 +2,8 @@ const multer = require('multer');
 const { diskStorage } = require('multer');
 const path = require('path');
 
-const maxSize = 1048576 * 10; // 10 MB limit
+// const maxSize = 1048576 * 10; // 10 MB limit
+const maxSize = 5 * 1024 * 1024;
 const allowedExtensions = ['.png', '.jpg', '.jpeg', '.mp3'];
 
 const storage = diskStorage({
@@ -22,7 +23,7 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({
   storage: storage,
-  limits: { fileSize: maxSize },
+  limits: { fieldNameSize: 200, fileSize: maxSize },
   fileFilter: fileFilter
 });
 

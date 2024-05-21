@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
 const passport = require('passport');
+const path = require('path');
 const app = express();
 require('./src/config/passport.config')(passport);
 
@@ -16,6 +17,9 @@ const achievementRouter = require('./src/routers/achievement.router');
 const questionRouter = require('./src/routers/question.router');
 const fileRouter = require('./src/routers/file.router');
 const vocabularyRouter = require('./src/routers/vocabulary.router');
+const partRouter = require('./src/routers/part.router');
+const groupQuestionsRouter = require('./src/routers/groupQuestion.router');
+const chatRouter = require('./src/routers/chat.router');
 
 app.use(
   cors({
@@ -26,6 +30,7 @@ app.use(
   })
 );
 
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
@@ -47,6 +52,9 @@ app.use('/api/results', achievementRouter);
 app.use('/api/questions', questionRouter);
 app.use('/api/files', fileRouter);
 app.use('/api/vocabularies', vocabularyRouter);
+app.use('/api/parts', partRouter);
+app.use('/api/group-question', groupQuestionsRouter);
+app.use('/api/chat', chatRouter);
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);

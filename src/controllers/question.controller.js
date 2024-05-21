@@ -13,22 +13,20 @@ exports.addQuestion = async (req, res) => {
       test_id,
       part_id,
       question_title,
-      image,
       answer_a,
       answer_b,
       answer_c,
       answer_d,
-      correct_answer
+      correct_answer,
+      image,
+      audio,
+      order,
+      group_id
     } = req.body;
-    const idFile = uuid();
-    await File.create({
-      id: idFile,
-      image: req.body.image,
-      audio_link: ''
-    });
-
-    await Question.create({
-      test_id,
+    // const fileImage = req.files.fileImage ? req.files.fileImage[0] : null;
+    // const fileAudio = req.files.fileAudio ? req.files.fileAudio[0] : null;
+    const newQuestion = {
+      test_id: req.body.test_id,
       part_id,
       question_title,
       answer_a,
@@ -36,9 +34,13 @@ exports.addQuestion = async (req, res) => {
       answer_c,
       answer_d,
       correct_answer,
-      file_id: idFile,
+      image,
+      audio,
+      order,
+      group_id,
       id: uuid()
-    });
+    };
+    await Question.create(newQuestion);
     res.status(StatusCodes.CREATED).send({
       status: 200,
       message: 'Question created successfully'
@@ -54,25 +56,28 @@ exports.getQuestionsByPartId = async (req, res) => {
     const { id } = req.params;
     const { type, part } = req.query;
     let questions = [];
+    let parts = part;
     if (type === 'fulltest') {
-      questions = await Question.getQuestionsByTestId(id);
-    } else {
-      for (const partId of part) {
-        const questionsByPartId = await Question.getQuestionsByPartId(partId);
-        questions.push(...questionsByPartId);
-      }
+      parts = ['1', '2', '3', '4', '5', '6', '7'];
     }
-    for (let question of questions) {
-      const fileImgs = [];
-      for (let id of question.file_id.split(',')) {
-        const file = await File.getFileById(id);
-        if (file[0]) {
-          fileImgs.push(file[0].image);
-        }
+    if (Array.isArray(parts)) {
+      for (const partNum of parts) {
+        const partDetail = await Part.getPartByPartNumAndTestId(partNum, id);
+        const partId = partDetail[0]?.id;
+        const questionsByPartNumTestId = await Question.getQuestionsByPartId(partId);
+        questionsByPartNumTestId.forEach((element) => {
+          element.part_num = partDetail[0].part_num;
+        });
+        questions.push(...questionsByPartNumTestId);
       }
-      const part = await Part.getPartByPartId(question.part_id);
-      question.image = fileImgs.join(',');
-      question.part_num = part[0].part_num;
+    } else {
+      const partDetail = await Part.getPartByPartNumAndTestId(parts, id);
+      const partId = partDetail[0].id;
+      const questionsByPartId = await Question.getQuestionsByPartId(partId);
+      questionsByPartId.forEach((element) => {
+        element.part_num = partDetail[0].part_num;
+      });
+      questions.push(...questionsByPartId);
     }
     const test = await Test.getTestById(id);
     let book = {};

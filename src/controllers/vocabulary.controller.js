@@ -48,7 +48,7 @@ exports.addVocabularies = async (req, res) => {
     await Vocabulary.create(vocabulariesAdd);
     res.status(StatusCodes.CREATED).send({
       status: 200,
-      message: 'Achievement created successfully'
+      message: 'Vocabulary created successfully'
     });
   } catch (error) {
     console.log({ error });
@@ -71,7 +71,6 @@ exports.getVocabulariesByGroupId = async (req, res) => {
   try {
     const { groupId } = req.params;
     const vocabularies = await Vocabulary.getVocabulariesByGroupId(groupId);
-    console.log({ vocabularies });
     res.status(StatusCodes.OK).send({
       message: 'Get vocabularies successfully',
       vocabularies: [...vocabularies]
