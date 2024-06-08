@@ -17,7 +17,6 @@ const fileRouter = require('./src/routers/file.router');
 const vocabularyRouter = require('./src/routers/vocabulary.router');
 const partRouter = require('./src/routers/part.router');
 const groupQuestionsRouter = require('./src/routers/groupQuestion.router');
-const chatRouter = require('./src/routers/chat.router');
 
 app.use(
   cors({
@@ -50,7 +49,6 @@ app.use('/api/files', fileRouter);
 app.use('/api/vocabularies', vocabularyRouter);
 app.use('/api/parts', partRouter);
 app.use('/api/group-question', groupQuestionsRouter);
-app.use('/api/chat', chatRouter);
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
