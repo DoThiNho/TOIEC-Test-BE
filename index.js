@@ -2,10 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
-const passport = require('passport');
 const path = require('path');
 const app = express();
-require('./src/config/passport.config')(passport);
 
 const PORT = process.env.PORT || 8888;
 
@@ -41,8 +39,6 @@ app.use(
     cookie: { secure: false }
   })
 );
-app.use(passport.initialize());
-app.use(passport.session());
 
 app.use('/api/auth', authRouter);
 app.use('/api/users', userRouter);

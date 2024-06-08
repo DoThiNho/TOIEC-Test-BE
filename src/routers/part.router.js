@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const passport = require('passport');
 const partController = require('../controllers/part.controller');
 const upload = require('../config/image.config');
 
