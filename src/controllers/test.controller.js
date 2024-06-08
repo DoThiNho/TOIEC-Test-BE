@@ -5,18 +5,30 @@ const Book = require('../models/books.model');
 const Test = require('../models/tests.model');
 const Part = require('../models/parts.model');
 const Question = require('../models/questions.model');
+const path = require('path');
 
 exports.addTest = async (req, res) => {
   try {
-    const newTest = await Test.create({
-      ...req.body,
+    const { title, bookId } = req.body;
+    const fileStr = req.files[0].path;
+    const fileName = path.basename(fileStr);
+    const newTest = {
+      book_id: bookId,
+      title,
+      audio_link: fileName,
       id: uuid()
+    };
+    await Test.create(newTest);
+    res.status(StatusCodes.CREATED).send({
+      status: StatusCodes.OK,
+      message: 'Test added successfully',
+      test: newTest
     });
-    res
-      .status(StatusCodes.CREATED)
-      .send({ status: StatusCodes.OK, message: 'Test added successfully' });
   } catch (error) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ error: error.message });
+    console.error('Error:', error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+      error: error.message || 'Internal Server Error'
+    });
   }
 };
 
@@ -80,11 +92,31 @@ exports.getTestsByBookTitle = async (req, res) => {
       const book = await Book.getBookById(test.book_id);
       test.book_title = book[0].title;
     }
-    console.log({ tests });
     res.status(StatusCodes.OK).send({ message: 'Get list test successfully', tests });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
       error: error.message
     });
+  }
+};
+
+exports.deleteTestById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await Test.deleteTestById(id);
+    if (result.affectedRows === 0) {
+      res.status(StatusCodes.NOT_FOUND).send({
+        status: StatusCodes.NOT_FOUND,
+        message: 'Book not found'
+      });
+    } else {
+      res.status(StatusCodes.OK).send({
+        status: StatusCodes.OK,
+        message: 'Book deleted successfully'
+      });
+    }
+  } catch (error) {
+    console.error('Error updating book:', error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ error: 'Failed to update user' });
   }
 };

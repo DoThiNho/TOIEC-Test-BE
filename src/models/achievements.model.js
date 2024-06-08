@@ -35,9 +35,19 @@ Achievements.getAchievementById = (id) => {
   return query(sql, [id]);
 };
 
+Achievements.getAchievementsByUserId = (userId) => {
+  const sql = 'SELECT * FROM achievements WHERE user_id = ?';
+  return query(sql, [userId]);
+};
+
 Achievements.getAchievementsByUserIdAndTestId = (userId, testId) => {
   const sql = 'SELECT * FROM achievements WHERE user_id = ? AND test_id = ? ORDER BY date DESC';
   return query(sql, [userId, testId]);
+};
+
+Achievements.deleteAchievementById = (id) => {
+  const sql = 'DELETE FROM achievements WHERE id = ?';
+  return query(sql, [id]);
 };
 
 module.exports = Achievements;

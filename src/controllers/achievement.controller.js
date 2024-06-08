@@ -94,6 +94,26 @@ exports.getAchievementById = async (req, res) => {
   }
 };
 
+exports.getAchievementsByUserId = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const achievements = await Achievement.getAchievementsByUserId(userId);
+    for (achievement of achievements) {
+      let test = await Test.getTestById(achievement.test_id);
+      const book = await Book.getBookById(test[0].book_id);
+      achievement.test_title = test[0].title;
+      achievement.book_title = book[0].title;
+    }
+    res.status(StatusCodes.OK).send({
+      status: 200,
+      message: 'Get result successfully',
+      achievements
+    });
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ error: error.message });
+  }
+};
+
 exports.getAchievementsByUserIdAndTestId = async (req, res) => {
   try {
     const tokenFromHeader = getToken(req);
@@ -107,5 +127,26 @@ exports.getAchievementsByUserIdAndTestId = async (req, res) => {
     });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ error: error.message });
+  }
+};
+
+exports.deleteAchievementById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await Achievement.deleteAchievementById(id);
+    if (result.affectedRows === 0) {
+      res.status(StatusCodes.NOT_FOUND).send({
+        status: StatusCodes.NOT_FOUND,
+        message: 'Achievement not found'
+      });
+    } else {
+      res.status(StatusCodes.OK).send({
+        status: StatusCodes.OK,
+        message: 'Achievement deleted successfully'
+      });
+    }
+  } catch (error) {
+    console.error('Error updating achievement:', error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ error: 'Failed to update user' });
   }
 };

@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { StatusCodes, getReasonPhrase } = require('http-status-codes');
+const User = require('../models/users.model');
 
 exports.loggedin = (req, res, next) => {
   if (req.session.loggedin) {
@@ -19,15 +20,32 @@ exports.isAuth = (req, res, next) => {
   }
 };
 
-exports.verifyToken = (req, res, next) => {
+exports.verifyToken = async (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1] || req.headers.authorization;
   if (!token) {
-    res.status(StatusCodes.UNAUTHORIZED).send({ message: 'Unauthorized' });
+    return res.status(StatusCodes.UNAUTHORIZED).send({ message: 'Unauthorized' });
   }
+
   try {
-    const claims = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.getUserById(decoded.id);
+    if (!user) {
+      return res.status(StatusCodes.UNAUTHORIZED).send({ message: 'Unauthorized' });
+    }
+
+    req.user = user[0];
     next();
   } catch (err) {
-    res.status(StatusCodes.UNAUTHORIZED).send({ message: 'Unauthorized' });
+    return res.status(StatusCodes.UNAUTHORIZED).send({ message: 'Unauthorized' });
   }
+};
+
+exports.authorizeRole = (requiredRoleId) => {
+  return (req, res, next) => {
+    console.log(req.user.role_id, requiredRoleId);
+    if (req.user && req.user.role_id === requiredRoleId) {
+      return next();
+    }
+    res.status(StatusCodes.FORBIDDEN).send({ message: 'Forbidden' });
+  };
 };

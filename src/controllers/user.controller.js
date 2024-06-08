@@ -8,6 +8,20 @@ const { v4: uuid } = require('uuid');
 const { cloudinary } = require('../config/cloudinary.config');
 const { getToken } = require('../helpers');
 
+exports.getUsers = async (req, res) => {
+  try {
+    const users = await User.getUsers();
+    res
+      .status(StatusCodes.OK)
+      .send({ status: StatusCodes.OK, message: 'Get test successfully', users });
+  } catch (error) {
+    console.log({ error });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+      error: error.message
+    });
+  }
+};
+
 exports.getUserByToken = async (req, res) => {
   try {
     const tokenFromHeader = getToken(req);
@@ -30,6 +44,29 @@ exports.getUserByToken = async (req, res) => {
         res.status(StatusCodes.UNAUTHORIZED).send({ message: 'Unauthorized' });
       }
     }
+  } catch (error) {
+    console.log({ error });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+      error: error.message
+    });
+  }
+};
+
+exports.getUserById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.getUserById(id);
+    const data = {
+      id: user[0].id,
+      firstName: user[0].first_name,
+      lastName: user[0].last_name,
+      email: user[0].email,
+      phoneNumber: user[0].phone_number,
+      image: user[0].image
+    };
+    res
+      .status(StatusCodes.OK)
+      .send({ status: StatusCodes.OK, message: 'Get test successfully', user: data });
   } catch (error) {
     console.log({ error });
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
@@ -90,5 +127,26 @@ exports.setAvatarUser = async (req, res) => {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
       error: error.message
     });
+  }
+};
+
+exports.deleteUserById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await User.deleteUserById(id);
+    if (result.affectedRows === 0) {
+      res.status(StatusCodes.NOT_FOUND).send({
+        status: StatusCodes.NOT_FOUND,
+        message: 'User not found'
+      });
+    } else {
+      res.status(StatusCodes.OK).send({
+        status: StatusCodes.OK,
+        message: 'User deleted successfully'
+      });
+    }
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ error: 'Failed to update user' });
   }
 };

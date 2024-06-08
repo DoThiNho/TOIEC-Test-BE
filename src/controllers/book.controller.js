@@ -1,4 +1,5 @@
 require('dotenv').config();
+const { v4: uuid } = require('uuid');
 const { StatusCodes, getReasonPhrase } = require('http-status-codes');
 const Book = require('../models/books.model');
 
@@ -18,7 +19,10 @@ exports.getBooks = async (req, res) => {
 
 exports.addBook = async (req, res) => {
   try {
-    const newBook = await Book.create(req.body);
+    const newBook = await Book.create({
+      ...req.body,
+      id: uuid()
+    });
     res
       .status(StatusCodes.CREATED)
       .send({ status: StatusCodes.OK, message: 'Book added successfully', book: newBook });
@@ -42,18 +46,24 @@ exports.updateBook = async (req, res) => {
   }
 };
 
-exports.deleteBook = async (req, res) => {
+exports.deleteBookById = async (req, res) => {
   try {
     const { id } = req.params;
-    const deletedBook = await Book.findByIdAndDelete(id);
-    if (!deletedBook) {
-      return res.status(StatusCodes.NOT_FOUND).send({ message: 'Book not found' });
+    const result = await Book.deleteBookById(id);
+    if (result.affectedRows === 0) {
+      res.status(StatusCodes.NOT_FOUND).send({
+        status: StatusCodes.NOT_FOUND,
+        message: 'Book not found'
+      });
+    } else {
+      res.status(StatusCodes.OK).send({
+        status: StatusCodes.OK,
+        message: 'Book deleted successfully'
+      });
     }
-    res
-      .status(StatusCodes.OK)
-      .send({ status: StatusCodes.OK, message: 'Book deleted successfully', book: deletedBook });
   } catch (error) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ error: error.message });
+    console.error('Error updating book:', error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ error: 'Failed to update user' });
   }
 };
 

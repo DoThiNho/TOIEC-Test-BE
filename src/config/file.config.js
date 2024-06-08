@@ -1,50 +1,58 @@
 const multer = require('multer');
-const { diskStorage } = require('multer');
 const path = require('path');
+const { v4: uuidv4 } = require('uuid');
 
-// const maxSize = 1048576 * 10; // 10 MB limit
-// const maxSize = 5 * 1024 * 1024;
-// const allowedExtensions = ['.png', '.jpg', '.jpeg', '.mp3'];
-
+// Configure storage for images
 const imageStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'public/assets/images');
   },
   filename: (req, file, cb) => {
-    cb(null, `${uuid()}-${file.originalname}`);
+    cb(null, file.originalname);
   }
 });
 
-// Cấu hình multer cho âm thanh
+// Configure storage for audio files
 const audioStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'public/assets/audio');
+    cb(null, 'public/assets/audios');
   },
   filename: (req, file, cb) => {
-    cb(null, `${file.originalname}`);
+    cb(null, file.originalname);
   }
 });
 
-// const fileFilter = (req, file, cb) => {
-//   const extname = path.extname(file.originalname).toLowerCase();
-//   if (allowedExtensions.includes(extname)) {
-//     cb(null, true);
-//   } else {
-//     cb(new Error('Only .png, .jpg, .jpeg and .mp3 files are allowed!'));
-//   }
-// };
+// Set up multer instances for image and audio uploads with file filters
+const imageUpload = multer({
+  storage: imageStorage,
+  fileFilter: (req, file, cb) => {
+    const allowedExtensions = ['.png', '.jpg', '.jpeg'];
+    const extname = path.extname(file.originalname).toLowerCase();
+    if (allowedExtensions.includes(extname)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only .png, .jpg, .jpeg files are allowed for images!'));
+    }
+  }
+});
 
-// const upload = multer({
-//   storage: storage,
-//   limits: { fieldNameSize: 200, fileSize: maxSize },
-//   fileFilter: fileFilter
-// });
+const audioUpload = multer({
+  storage: audioStorage,
+  fileFilter: (req, file, cb) => {
+    const allowedExtensions = ['.mp3', '.wav'];
+    const extname = path.extname(file.originalname).toLowerCase();
+    if (allowedExtensions.includes(extname)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only .mp3, .wav files are allowed for audio!'));
+    }
+  }
+});
 
-const imageUpload = multer({ storage: imageStorage });
-const audioUpload = multer({ storage: audioStorage });
-
-const upload = multer({ storage: multer.memoryStorage() }).fields([
-  { name: 'fileImage', maxCount: 1 },
-  { name: 'fileAudio', maxCount: 1 }
+// Middleware to handle multiple file uploads with different fields
+const upload = multer().fields([
+  { name: 'fileImage', maxCount: 1, storage: imageUpload.storage },
+  { name: 'fileAudio', maxCount: 1, storage: audioUpload.storage }
 ]);
+
 module.exports = upload;

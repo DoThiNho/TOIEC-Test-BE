@@ -15,7 +15,8 @@ exports.addUserAnswers = async (req, res) => {
       total_correct,
       total_questions,
       user_id,
-      type
+      type,
+      title
     } = req.body;
     const idAchievement = uuid();
 
@@ -34,7 +35,8 @@ exports.addUserAnswers = async (req, res) => {
       complete_time,
       total_correct,
       total_questions,
-      type
+      type,
+      title
     };
     await Achievement.create(newAchievement);
     await UserAnswer.create(answersAdd);

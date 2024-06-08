@@ -22,6 +22,11 @@ User.findByEmail = async (email) => {
   return result[0];
 };
 
+User.getUsers = () => {
+  const sql = `SELECT * FROM users`;
+  return query(sql);
+};
+
 User.getUserById = (id) => {
   const sql = `SELECT * FROM users WHERE id = ?`;
   return query(sql, [id]);
@@ -36,6 +41,11 @@ User.updateUserById = (userData) => {
 User.setAvatarUser = (image, id) => {
   const sql = 'UPDATE users SET image = ? WHERE id = ?';
   return query(sql, [image, id]);
+};
+
+User.deleteUserById = (id) => {
+  const sql = 'DELETE FROM users WHERE id = ?';
+  return query(sql, [id]);
 };
 
 module.exports = User;

@@ -6,9 +6,70 @@ const Part = require('../models/parts.model');
 const Test = require('../models/tests.model');
 const Book = require('../models/books.model');
 const { v4: uuid } = require('uuid');
+const path = require('path');
+const XLSX = require('xlsx');
 
-exports.addQuestion = async (req, res) => {
+exports.addQuestions = async (req, res) => {
   try {
+    if (!req.file) {
+      return res.status(StatusCodes.BAD_REQUEST).send({ error: 'No file uploaded' });
+    }
+    const { test_id } = req.body;
+    const parts = [];
+    for (let i = 1; i <= 7; i++) {
+      let partType = null;
+      if (i <= 4) {
+        partType = 'listening';
+      } else {
+        partType = 'reading';
+      }
+
+      const part = {
+        test_id,
+        part_num: i.toString(),
+        type: partType,
+        id: uuid()
+      };
+      await Part.create(part);
+      parts.push(part);
+    }
+    const filePath = path.join(__dirname, '..', req.file.path);
+    const workbook = XLSX.readFile(`${req.file.path}`);
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+    console.log({ worksheet, parts });
+    const questions = worksheet.map((row) => ({
+      test_id,
+      part_id: parts.find((part) => part.part_num === row.part.toString()).id,
+      question_title: row.question,
+      answer_a: row.option1,
+      answer_b: row.option2,
+      answer_c: row.option3,
+      answer_d: row.option4,
+      correct_answer: row.correctanswer,
+      image: row.image,
+      audio: row.audio,
+      order: row.number,
+      group_id: row.group_id,
+      id: uuid()
+    }));
+
+    console.log({ questions });
+    await Question.create(questions);
+
+    res.status(StatusCodes.CREATED).send({
+      status: 200,
+      message: 'Questions created successfully'
+    });
+  } catch (error) {
+    console.log({ error });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ error: error.message });
+  }
+};
+
+exports.updateQuestion = async (req, res) => {
+  try {
+    const questionId = req.params.id;
     const {
       test_id,
       part_id,
@@ -23,10 +84,9 @@ exports.addQuestion = async (req, res) => {
       order,
       group_id
     } = req.body;
-    // const fileImage = req.files.fileImage ? req.files.fileImage[0] : null;
-    // const fileAudio = req.files.fileAudio ? req.files.fileAudio[0] : null;
-    const newQuestion = {
-      test_id: req.body.test_id,
+
+    const updateFields = {
+      test_id,
       part_id,
       question_title,
       answer_a,
@@ -37,17 +97,41 @@ exports.addQuestion = async (req, res) => {
       image,
       audio,
       order,
-      group_id,
-      id: uuid()
+      group_id
     };
-    await Question.create(newQuestion);
-    res.status(StatusCodes.CREATED).send({
-      status: 200,
-      message: 'Question created successfully'
+
+    // Handle file uploads if any
+    if (req.files) {
+      if (req.files.fileImage && req.files.fileImage.length > 0) {
+        const fileImage = req.files.fileImage[0].originalname;
+        updateFields.image = fileImage;
+      }
+      if (req.files.fileAudio && req.files.fileAudio.length > 0) {
+        const fileAudio = req.files.fileAudio[0].originalname;
+        updateFields.audio = fileAudio;
+      }
+    }
+
+    const result = await Question.update(questionId, updateFields);
+
+    console.log({ updateFields });
+
+    if (result.affectedRows === 0) {
+      return res.status(StatusCodes.NOT_FOUND).send({
+        status: StatusCodes.NOT_FOUND,
+        message: 'Question not found'
+      });
+    }
+
+    res.status(StatusCodes.OK).send({
+      status: StatusCodes.OK,
+      message: 'Question updated successfully'
     });
   } catch (error) {
-    console.log({ error });
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ error: error.message });
+    console.error('Error:', error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+      error: error.message || 'Internal Server Error'
+    });
   }
 };
 

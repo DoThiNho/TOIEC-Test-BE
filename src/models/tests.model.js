@@ -36,4 +36,9 @@ Test.create = async (newTest) => {
   return query(sql, [newTest]);
 };
 
+Test.deleteTestById = (id) => {
+  const sql = 'DELETE FROM tests WHERE id = ?';
+  return query(sql, [id]);
+};
+
 module.exports = Test;

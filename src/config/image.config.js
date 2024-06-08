@@ -4,9 +4,12 @@ const path = require('path');
 
 // const maxSize = 1048576 * 10; // 10 MB limit
 const maxSize = 5 * 1024 * 1024;
-const allowedExtensions = ['.png', '.jpg', '.jpeg', '.mp3'];
+const allowedExtensions = ['.png', '.jpg', '.jpeg'];
 
 const storage = diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/assets/images');
+  },
   filename: function (req, file, cb) {
     cb(null, file.originalname);
   }
@@ -17,7 +20,7 @@ const fileFilter = (req, file, cb) => {
   if (allowedExtensions.includes(extname)) {
     cb(null, true);
   } else {
-    cb(new Error('Only .png, .jpg, .jpeg and .mp3 files are allowed!'));
+    cb(new Error('Only .png, .jpg, .jpeg files are allowed!'));
   }
 };
 

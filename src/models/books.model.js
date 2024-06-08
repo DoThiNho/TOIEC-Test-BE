@@ -24,9 +24,14 @@ Book.getBookById = (id) => {
   return query(sql, [id]);
 };
 
-Book.addBook = async (newBook) => {
+Book.create = async (newBook) => {
   const sql = 'INSERT INTO books SET ?';
   return query(sql, [newBook]);
+};
+
+Book.deleteBookById = (id) => {
+  const sql = 'DELETE FROM books WHERE id = ?';
+  return query(sql, [id]);
 };
 
 module.exports = Book;
