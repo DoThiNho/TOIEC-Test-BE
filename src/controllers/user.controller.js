@@ -29,6 +29,7 @@ exports.getUserByToken = async (req, res) => {
       const decoded = jwt.verify(tokenFromHeader, process.env.JWT_SECRET);
       if (decoded) {
         const user = await User.getUserById(decoded.id);
+        console.log({ id: decoded.id });
         const data = {
           id: user[0].id,
           firstName: user[0].first_name,

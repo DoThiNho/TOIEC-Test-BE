@@ -1,7 +1,6 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const session = require('express-session');
 const path = require('path');
 const app = express();
 
@@ -30,14 +29,6 @@ app.use(
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false }
-  })
-);
 
 app.use('/api/auth', authRouter);
 app.use('/api/users', userRouter);
