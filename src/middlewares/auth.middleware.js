@@ -42,7 +42,6 @@ exports.verifyToken = async (req, res, next) => {
 
 exports.authorizeRole = (requiredRoleId) => {
   return (req, res, next) => {
-    console.log(req.user.role_id, requiredRoleId);
     if (req.user && req.user.role_id === requiredRoleId) {
       return next();
     }

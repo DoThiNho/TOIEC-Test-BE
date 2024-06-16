@@ -36,14 +36,16 @@ exports.getGroupQuestionsByPartId = async (req, res) => {
     if (Array.isArray(parts)) {
       for (const partNum of parts) {
         const partDetail = await Part.getPartByPartNumAndTestId(partNum, id);
-        const partId = partDetail[0].id;
-        const groupQuestionByPartId = await GroupQuestions.getGroupQuestionByPartId(partId);
-        if (groupQuestionByPartId.length > 0) {
-          for (const groupQuestion of groupQuestionByPartId) {
-            const questionsByGroupId = await Question.getQuestionsByGroupId(groupQuestion.id);
-            groupQuestion.questions = [...questionsByGroupId];
-            groupQuestion.part_num = partDetail[0].part_num;
-            groupQuestions.push(groupQuestion);
+        const partId = partDetail[0]?.id;
+        if (partId) {
+          const groupQuestionByPartId = await GroupQuestions.getGroupQuestionByPartId(partId);
+          if (groupQuestionByPartId.length > 0) {
+            for (const groupQuestion of groupQuestionByPartId) {
+              const questionsByGroupId = await Question.getQuestionsByGroupId(groupQuestion.id);
+              groupQuestion.questions = [...questionsByGroupId];
+              groupQuestion.part_num = partDetail[0].part_num;
+              groupQuestions.push(groupQuestion);
+            }
           }
         }
       }

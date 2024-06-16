@@ -22,7 +22,7 @@ exports.addTest = async (req, res) => {
     res.status(StatusCodes.CREATED).send({
       status: StatusCodes.OK,
       message: 'Test added successfully',
-      test: newTest
+      data: newTest
     });
   } catch (error) {
     console.error('Error:', error);
@@ -40,7 +40,7 @@ exports.getTests = async (req, res) => {
       const book = await Book.getBookById(test.book_id);
       test.book_title = book[0].title;
     }
-    res.status(StatusCodes.OK).send({ message: 'Get list test successfully', tests });
+    res.status(StatusCodes.OK).send({ message: 'Get list test successfully', data: tests });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
       error: error.message
@@ -76,7 +76,7 @@ exports.getTestsByBookId = async (req, res) => {
   try {
     const { bookId } = req.params;
     const tests = await Test.getTestsByBookId(bookId);
-    res.status(StatusCodes.OK).send({ message: 'Get list test successfully', tests });
+    res.status(StatusCodes.OK).send({ message: 'Get list test successfully', data: tests });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
       error: error.message
@@ -92,7 +92,7 @@ exports.getTestsByBookTitle = async (req, res) => {
       const book = await Book.getBookById(test.book_id);
       test.book_title = book[0].title;
     }
-    res.status(StatusCodes.OK).send({ message: 'Get list test successfully', tests });
+    res.status(StatusCodes.OK).send({ message: 'Get list test successfully', data: tests });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
       error: error.message

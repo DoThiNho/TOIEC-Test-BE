@@ -73,7 +73,7 @@ exports.getVocabulariesByGroupId = async (req, res) => {
     const vocabularies = await Vocabulary.getVocabulariesByGroupId(groupId);
     res.status(StatusCodes.OK).send({
       message: 'Get vocabularies successfully',
-      vocabularies: [...vocabularies]
+      data: [...vocabularies]
     });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({

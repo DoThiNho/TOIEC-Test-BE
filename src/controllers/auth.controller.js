@@ -60,8 +60,6 @@ exports.login = async (req, res) => {
         return res.status(StatusCodes.UNAUTHORIZED).send({ message: 'Password is incorrect' });
     }
 
-    req.session.loggedin = true;
-    req.session.user = user;
     res.status(StatusCodes.OK).send({
       user,
       token: jwt.sign(

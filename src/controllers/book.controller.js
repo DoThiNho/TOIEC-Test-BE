@@ -9,7 +9,7 @@ exports.getBooks = async (req, res) => {
     const books = await Book.getBooks(search, page, limit);
     res
       .status(StatusCodes.OK)
-      .send({ status: StatusCodes.OK, message: 'Get list book successfully', books });
+      .send({ status: StatusCodes.OK, message: 'Get list book successfully', data: books });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
       error: error.message
@@ -25,7 +25,7 @@ exports.addBook = async (req, res) => {
     });
     res
       .status(StatusCodes.CREATED)
-      .send({ status: StatusCodes.OK, message: 'Book added successfully', book: newBook });
+      .send({ status: StatusCodes.OK, message: 'Book added successfully', data: newBook });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ error: error.message });
   }
@@ -40,7 +40,7 @@ exports.updateBook = async (req, res) => {
     }
     res
       .status(StatusCodes.OK)
-      .send({ status: StatusCodes.OK, message: 'Book updated successfully', book: updatedBook });
+      .send({ status: StatusCodes.OK, message: 'Book updated successfully', data: updatedBook });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ error: error.message });
   }
@@ -78,7 +78,7 @@ exports.searchBooksByTitle = async (req, res) => {
     }
     res
       .status(StatusCodes.OK)
-      .send({ status: StatusCodes.OK, message: 'Books found successfully', books });
+      .send({ status: StatusCodes.OK, message: 'Books found successfully', data: books });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ error: error.message });
   }

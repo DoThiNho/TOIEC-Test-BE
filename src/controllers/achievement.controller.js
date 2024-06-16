@@ -35,7 +35,7 @@ exports.getAchievements = async (req, res) => {
     res.status(StatusCodes.OK).send({
       status: StatusCodes.OK,
       message: 'Get list book successfully',
-      achievements
+      data: achievements
     });
   } catch (error) {}
 };
@@ -107,7 +107,7 @@ exports.getAchievementsByUserId = async (req, res) => {
     res.status(StatusCodes.OK).send({
       status: 200,
       message: 'Get result successfully',
-      achievements
+      data: achievements
     });
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ error: error.message });

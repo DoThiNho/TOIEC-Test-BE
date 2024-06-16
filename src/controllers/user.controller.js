@@ -13,7 +13,7 @@ exports.getUsers = async (req, res) => {
     const users = await User.getUsers();
     res
       .status(StatusCodes.OK)
-      .send({ status: StatusCodes.OK, message: 'Get test successfully', users });
+      .send({ status: StatusCodes.OK, message: 'Get test successfully', data: users });
   } catch (error) {
     console.log({ error });
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
@@ -29,7 +29,6 @@ exports.getUserByToken = async (req, res) => {
       const decoded = jwt.verify(tokenFromHeader, process.env.JWT_SECRET);
       if (decoded) {
         const user = await User.getUserById(decoded.id);
-        console.log({ id: decoded.id });
         const data = {
           id: user[0].id,
           firstName: user[0].first_name,
@@ -40,7 +39,7 @@ exports.getUserByToken = async (req, res) => {
         };
         res
           .status(StatusCodes.OK)
-          .send({ status: StatusCodes.OK, message: 'Get test successfully', user: data });
+          .send({ status: StatusCodes.OK, message: 'Get test successfully', data: data });
       } else {
         res.status(StatusCodes.UNAUTHORIZED).send({ message: 'Unauthorized' });
       }
@@ -67,7 +66,7 @@ exports.getUserById = async (req, res) => {
     };
     res
       .status(StatusCodes.OK)
-      .send({ status: StatusCodes.OK, message: 'Get test successfully', user: data });
+      .send({ status: StatusCodes.OK, message: 'Get test successfully', data: data });
   } catch (error) {
     console.log({ error });
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
@@ -117,7 +116,7 @@ exports.setAvatarUser = async (req, res) => {
         res.status(StatusCodes.OK).json({
           status: StatusCodes.OK,
           message: 'Avatar updated successfully',
-          url: uploadResponse.url
+          data: uploadResponse.url
         });
       } else {
         res.status(StatusCodes.UNAUTHORIZED).send({ message: 'Unauthorized' });

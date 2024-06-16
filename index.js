@@ -17,14 +17,7 @@ const vocabularyRouter = require('./src/routers/vocabulary.router');
 const partRouter = require('./src/routers/part.router');
 const groupQuestionsRouter = require('./src/routers/groupQuestion.router');
 
-app.use(
-  cors({
-    origin: process.env.CLIENT_URL,
-    methods: ['POST', 'GET', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true
-  })
-);
+app.use(cors());
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());

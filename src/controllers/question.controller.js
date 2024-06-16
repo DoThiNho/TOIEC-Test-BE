@@ -8,6 +8,8 @@ const Book = require('../models/books.model');
 const { v4: uuid } = require('uuid');
 const path = require('path');
 const XLSX = require('xlsx');
+const GroupQuestions = require('../models/groupQuestions.model');
+const { group } = require('console');
 
 exports.addQuestions = async (req, res) => {
   try {
@@ -37,10 +39,9 @@ exports.addQuestions = async (req, res) => {
     const workbook = XLSX.readFile(`${req.file.path}`);
     const sheetName = workbook.SheetNames[0];
     const worksheet = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
-    console.log({ worksheet, parts });
     const questions = worksheet.map((row) => ({
       test_id,
-      part_id: parts.find((part) => part.part_num === row.part.toString()).id,
+      part_id: parts.find((part) => part.part_num === row.part?.toString())?.id,
       question_title: row.question,
       answer_a: row.option1,
       answer_b: row.option2,
@@ -54,11 +55,51 @@ exports.addQuestions = async (req, res) => {
       id: uuid()
     }));
 
-    console.log({ questions });
-    await Question.create(questions);
+    const files = [];
+    for (let question of questions) {
+      const partNum = parts.find((part) => part.id === question.part_id)?.part_num;
+      if (['3', '4', '6', '7'].includes(partNum)) {
+        const isExist = files.some((file) => {
+          return file.audio === question.audio && file.image === question.image;
+        });
+        if (!isExist) {
+          files.push({
+            audio: question.audio,
+            image: question.image
+          });
+        }
+      } else {
+        await Question.create(question);
+      }
+    }
+
+    for (let file of files) {
+      const listQuestionByFile = questions.filter(
+        (question) => question.audio === file.audio && question.image === file.image
+      );
+      if (listQuestionByFile.length > 1) {
+        const idGroupQuestion = uuid();
+        const newGroupQuestion = await GroupQuestions.create({
+          part_id: listQuestionByFile[0].part_id,
+          test_id: 1,
+          group_image: listQuestionByFile[0].image,
+          group_audio: listQuestionByFile[0].audio
+        });
+        for (let q of listQuestionByFile) {
+          if (q.part_id) {
+            await Question.create({
+              ...q,
+              group_id: newGroupQuestion.insertId
+            });
+          }
+        }
+      } else {
+        await Question.create({ ...listQuestionByFile[0] });
+      }
+    }
 
     res.status(StatusCodes.CREATED).send({
-      status: 200,
+      status: 201,
       message: 'Questions created successfully'
     });
   } catch (error) {
@@ -114,8 +155,6 @@ exports.updateQuestion = async (req, res) => {
 
     const result = await Question.update(questionId, updateFields);
 
-    console.log({ updateFields });
-
     if (result.affectedRows === 0) {
       return res.status(StatusCodes.NOT_FOUND).send({
         status: StatusCodes.NOT_FOUND,
@@ -156,10 +195,10 @@ exports.getQuestionsByPartId = async (req, res) => {
       }
     } else {
       const partDetail = await Part.getPartByPartNumAndTestId(parts, id);
-      const partId = partDetail[0].id;
+      const partId = partDetail[0]?.id;
       const questionsByPartId = await Question.getQuestionsByPartId(partId);
       questionsByPartId.forEach((element) => {
-        element.part_num = partDetail[0].part_num;
+        element.part_num = partDetail[0]?.part_num;
       });
       questions.push(...questionsByPartId);
     }
@@ -172,9 +211,9 @@ exports.getQuestionsByPartId = async (req, res) => {
       status: StatusCodes.OK,
       message: 'Get list question successfully',
       data: {
-        test_title: test[0].title,
-        book_title: book[0].title,
-        audio_link: test[0].audio_link,
+        test_title: test[0]?.title,
+        book_title: book[0]?.title,
+        audio_link: test[0]?.audio_link,
         questions
       }
     });
