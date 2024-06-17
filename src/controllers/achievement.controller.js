@@ -55,7 +55,7 @@ exports.getAchievementById = async (req, res) => {
       let groupQuestions = [];
       for (const partNum of parts) {
         const partDetail = await Part.getPartByPartNumAndTestId(partNum, test[0].id);
-        const partId = partDetail[0].id;
+        const partId = partDetail[0]?.id;
         const questionsByPartNumTestId = await Question.getQuestionsByPartId(partId);
         questionsByPartNumTestId.forEach((element) => {
           element.part_num = partDetail[0].part_num;
@@ -88,6 +88,7 @@ exports.getAchievementById = async (req, res) => {
       });
     }
   } catch (error) {
+    console.log({ error });
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
       error: error.message
     });
@@ -126,6 +127,7 @@ exports.getAchievementsByUserIdAndTestId = async (req, res) => {
       data: achievements
     });
   } catch (error) {
+    consol.log(error);
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ error: error.message });
   }
 };

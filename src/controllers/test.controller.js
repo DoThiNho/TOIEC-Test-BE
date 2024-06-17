@@ -15,7 +15,7 @@ exports.addTest = async (req, res) => {
     const newTest = {
       book_id: bookId,
       title,
-      audio_link: fileName,
+      audio: fileName,
       id: uuid()
     };
     await Test.create(newTest);
@@ -62,7 +62,7 @@ exports.getTestById = async (req, res) => {
         title: test[0].title,
         book_title: book[0].title,
         parts,
-        audio_link: test[0].audio_link
+        audio: test[0].audio
       }
     });
   } catch (error) {

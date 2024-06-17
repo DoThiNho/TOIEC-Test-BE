@@ -51,8 +51,7 @@ exports.addQuestions = async (req, res) => {
       image: row.image,
       audio: row.audio,
       order: row.number,
-      group_id: row.group_id,
-      id: uuid()
+      group_id: row.group_id
     }));
 
     const files = [];
@@ -81,7 +80,7 @@ exports.addQuestions = async (req, res) => {
         const idGroupQuestion = uuid();
         const newGroupQuestion = await GroupQuestions.create({
           part_id: listQuestionByFile[0].part_id,
-          test_id: 1,
+          test_id: test_id,
           group_image: listQuestionByFile[0].image,
           group_audio: listQuestionByFile[0].audio
         });

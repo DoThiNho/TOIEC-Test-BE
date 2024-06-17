@@ -3,7 +3,7 @@ const { StatusCodes, getReasonPhrase } = require('http-status-codes');
 const User = require('../models/users.model');
 
 exports.loggedin = (req, res, next) => {
-  if (req.session.loggedin) {
+  if (req.session?.loggedin) {
     res.locals.user = req.session.user;
     next();
   } else {
@@ -12,7 +12,7 @@ exports.loggedin = (req, res, next) => {
 };
 
 exports.isAuth = (req, res, next) => {
-  if (req.session.loggedin) {
+  if (req.session?.loggedin) {
     res.locals.user = req.session.user;
     res.redirect(`${process.env.CLIENT_URL}home`);
   } else {

@@ -7,7 +7,7 @@ const Achievements = function (achievement) {
   this.parts = achievement.parts;
   this.start_time = achievement.start_time;
   this.complete_time = achievement.complete_time;
-  this.total_correct = achievement.total_correct;
+  this.total_corrects = achievement.total_corrects;
   this.total_questions = achievement.total_questions;
 };
 

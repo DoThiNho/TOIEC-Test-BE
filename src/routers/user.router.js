@@ -7,7 +7,7 @@ const authMiddleware = require('../middlewares/auth.middleware');
 router.get(
   '/',
   authMiddleware.verifyToken,
-  authMiddleware.authorizeRole('1'),
+  authMiddleware.authorizeRole(1),
   userController.getUsers
 );
 router.get('/me', authMiddleware.verifyToken, userController.getUserByToken);

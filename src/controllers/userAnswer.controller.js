@@ -12,7 +12,7 @@ exports.addUserAnswers = async (req, res) => {
       parts,
       start_time,
       test_id,
-      total_correct,
+      total_corrects,
       total_questions,
       user_id,
       type,
@@ -33,7 +33,7 @@ exports.addUserAnswers = async (req, res) => {
       parts: parts.join(''),
       date: start_time,
       complete_time,
-      total_correct,
+      total_corrects,
       total_questions,
       type,
       title
@@ -46,6 +46,7 @@ exports.addUserAnswers = async (req, res) => {
       data: { ...newAchievement }
     });
   } catch (error) {
+    console.log({ error });
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ error: error.message });
   }
 };
