@@ -13,6 +13,8 @@ exports.addUserAnswers = async (req, res) => {
       start_time,
       test_id,
       total_corrects,
+      score_listening,
+      score_reading,
       total_questions,
       user_id,
       type,
@@ -34,6 +36,8 @@ exports.addUserAnswers = async (req, res) => {
       date: start_time,
       complete_time,
       total_corrects,
+      score_listening: score_listening,
+      score_reading: score_reading,
       total_questions,
       type,
       title

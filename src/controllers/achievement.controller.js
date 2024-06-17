@@ -45,14 +45,16 @@ exports.getAchievementById = async (req, res) => {
     const { id } = req.params;
     const achievement = await Achievement.getAchievementById(id);
     let test = await Test.getTestById(achievement[0].test_id);
+    console.log({ achievement });
     const book = await Book.getBookById(test[0].book_id);
     test[0].book_title = book[0].title;
 
     if (achievement[0]) {
-      const parts = achievement[0].parts.split(',');
+      let parts = achievement[0].parts.split(',');
       const questions = [];
       const answers = [];
       let groupQuestions = [];
+      if (parts[0] === '') parts = ['1', '2', '3', '4', '5', '6', '7'];
       for (const partNum of parts) {
         const partDetail = await Part.getPartByPartNumAndTestId(partNum, test[0].id);
         const partId = partDetail[0]?.id;
