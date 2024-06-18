@@ -6,24 +6,30 @@ const Test = require('../models/tests.model');
 const Part = require('../models/parts.model');
 const Question = require('../models/questions.model');
 const path = require('path');
+const { getIo } = require('../config/socketIo.config');
 
 exports.addTest = async (req, res) => {
   try {
     const { title, bookId } = req.body;
     const fileStr = req.files[0].path;
     const fileName = path.basename(fileStr);
+    const testId = uuid();
     const newTest = {
       book_id: bookId,
       title,
       audio: fileName,
-      id: uuid()
+      id: testId
     };
-    await Test.create(newTest);
-    res.status(StatusCodes.CREATED).send({
-      status: StatusCodes.OK,
-      message: 'Test added successfully',
-      data: newTest
-    });
+    const result = await Test.create(newTest);
+    if (result) {
+      const io = getIo();
+      io.emit('add-test', testId);
+      res.status(StatusCodes.CREATED).send({
+        status: StatusCodes.OK,
+        message: 'Test added successfully',
+        data: newTest
+      });
+    }
   } catch (error) {
     console.error('Error:', error);
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
@@ -110,6 +116,8 @@ exports.deleteTestById = async (req, res) => {
         message: 'Book not found'
       });
     } else {
+      const io = getIo();
+      io.emit('delete-test', id);
       res.status(StatusCodes.OK).send({
         status: StatusCodes.OK,
         message: 'Book deleted successfully'

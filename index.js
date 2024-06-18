@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const app = express();
+const http = require('http');
 
 const PORT = process.env.PORT || 8888;
 
@@ -16,6 +17,10 @@ const fileRouter = require('./src/routers/file.router');
 const vocabularyRouter = require('./src/routers/vocabulary.router');
 const partRouter = require('./src/routers/part.router');
 const groupQuestionsRouter = require('./src/routers/groupQuestion.router');
+const { initializeSocketIo } = require('./src/config/socketIo.config');
+const server = http.createServer(app);
+
+initializeSocketIo(server);
 
 app.use(cors());
 
@@ -34,6 +39,14 @@ app.use('/api/vocabularies', vocabularyRouter);
 app.use('/api/parts', partRouter);
 app.use('/api/group-question', groupQuestionsRouter);
 
-app.listen(PORT, () => {
+// socketIo.on('connection', (socket) => {
+//   console.log('New client connected' + socket.id);
+
+//   socket.on('disconnect', () => {
+//     console.log('Client disconnected');
+//   });
+// });
+
+server.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
 });
