@@ -23,7 +23,7 @@ exports.addTest = async (req, res) => {
     const result = await Test.create(newTest);
     if (result) {
       const io = getIo();
-      io.emit('add-test', testId);
+      io.emit('change-test', testId);
       res.status(StatusCodes.CREATED).send({
         status: StatusCodes.OK,
         message: 'Test added successfully',
@@ -117,7 +117,8 @@ exports.deleteTestById = async (req, res) => {
       });
     } else {
       const io = getIo();
-      io.emit('delete-test', id);
+      console.log({ id });
+      io.emit('change-test', id);
       res.status(StatusCodes.OK).send({
         status: StatusCodes.OK,
         message: 'Book deleted successfully'

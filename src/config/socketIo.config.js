@@ -15,7 +15,6 @@ function initializeSocketIo(server) {
     socket.on('disconnect', () => {
       console.log('user disconnected');
     });
-    // Add other event handlers here
   });
 
   return io;

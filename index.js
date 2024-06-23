@@ -39,14 +39,6 @@ app.use('/api/vocabularies', vocabularyRouter);
 app.use('/api/parts', partRouter);
 app.use('/api/group-question', groupQuestionsRouter);
 
-// socketIo.on('connection', (socket) => {
-//   console.log('New client connected' + socket.id);
-
-//   socket.on('disconnect', () => {
-//     console.log('Client disconnected');
-//   });
-// });
-
 server.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
 });
