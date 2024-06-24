@@ -8,6 +8,8 @@ const Question = require('../models/questions.model');
 const path = require('path');
 const { getIo } = require('../config/socketIo.config');
 
+const io = getIo();
+
 exports.addTest = async (req, res) => {
   try {
     const { title, bookId } = req.body;
@@ -22,7 +24,6 @@ exports.addTest = async (req, res) => {
     };
     const result = await Test.create(newTest);
     if (result) {
-      const io = getIo();
       io.emit('change-test', testId);
       res.status(StatusCodes.CREATED).send({
         status: StatusCodes.OK,
@@ -116,7 +117,6 @@ exports.deleteTestById = async (req, res) => {
         message: 'Book not found'
       });
     } else {
-      const io = getIo();
       console.log({ id });
       io.emit('change-test', id);
       res.status(StatusCodes.OK).send({
