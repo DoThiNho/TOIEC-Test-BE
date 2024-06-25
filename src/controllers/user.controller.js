@@ -101,27 +101,20 @@ exports.updateUser = async (req, res) => {
 
 exports.setAvatarUser = async (req, res) => {
   try {
-    const tokenFromHeader = getToken(req);
-    if (tokenFromHeader) {
-      const decoded = jwt.verify(tokenFromHeader, process.env.JWT_SECRET);
-      if (decoded) {
-        const { path: fileStr } = req.file;
-        const uploadResponse = await cloudinary.uploader.upload(fileStr);
-        const user = await User.getUserById(decoded.id);
-        const userUpdate = {
-          ...user[0],
-          image: uploadResponse.url
-        };
-        await User.updateUserById(userUpdate);
-        res.status(StatusCodes.OK).json({
-          status: StatusCodes.OK,
-          message: 'Avatar updated successfully',
-          data: uploadResponse.url
-        });
-      } else {
-        res.status(StatusCodes.UNAUTHORIZED).send({ message: 'Unauthorized' });
-      }
-    }
+    const { id } = req.body;
+    const { path: fileStr } = req.file;
+    const uploadResponse = await cloudinary.uploader.upload(fileStr);
+    const user = await User.getUserById(id);
+    const userUpdate = {
+      ...user[0],
+      image: uploadResponse.url
+    };
+    await User.updateUserById(userUpdate);
+    res.status(StatusCodes.OK).json({
+      status: StatusCodes.OK,
+      message: 'Avatar updated successfully',
+      data: uploadResponse.url
+    });
   } catch (error) {
     console.log({ error });
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
