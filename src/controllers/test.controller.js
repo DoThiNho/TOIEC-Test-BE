@@ -117,7 +117,6 @@ exports.deleteTestById = async (req, res) => {
         message: 'Book not found'
       });
     } else {
-      console.log({ id });
       io.emit('change-test', id);
       res.status(StatusCodes.OK).send({
         status: StatusCodes.OK,

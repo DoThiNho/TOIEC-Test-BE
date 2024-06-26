@@ -11,12 +11,16 @@ const Test = require('../models/tests.model');
 const Book = require('../models/books.model');
 const File = require('../models/files.model');
 const Part = require('../models/parts.model');
+const { getIo } = require('../config/socketIo.config');
+
+const io = getIo();
 
 exports.addAchievement = async (req, res) => {
   try {
+    const achievementId = uuid();
     const newAchievement = await Achievement.create({
       ...req.body,
-      id: uuid()
+      id: achievementId
     });
     res.status(StatusCodes.CREATED).send({
       status: 200,
@@ -45,7 +49,6 @@ exports.getAchievementById = async (req, res) => {
     const { id } = req.params;
     const achievement = await Achievement.getAchievementById(id);
     let test = await Test.getTestById(achievement[0].test_id);
-    console.log({ achievement });
     const book = await Book.getBookById(test[0].book_id);
     test[0].book_title = book[0].title;
 
@@ -63,7 +66,10 @@ exports.getAchievementById = async (req, res) => {
           element.part_num = partDetail[0].part_num;
         });
         questions.push(...questionsByPartNumTestId);
-        const listGroupQuestion = await GroupQuestions.getGroupQuestionByPartId(partId);
+        let listGroupQuestion = [];
+        if (partId) {
+          listGroupQuestion = await GroupQuestions.getGroupQuestionByPartId(partId);
+        }
         for (const groupQuestion of listGroupQuestion) {
           const questionsByGroupId = await Question.getQuestionsByGroupId(groupQuestion.id);
           groupQuestion.questions = [...questionsByGroupId];
@@ -144,6 +150,7 @@ exports.deleteAchievementById = async (req, res) => {
         message: 'Achievement not found'
       });
     } else {
+      io.emit('change-result', id);
       res.status(StatusCodes.OK).send({
         status: StatusCodes.OK,
         message: 'Achievement deleted successfully'

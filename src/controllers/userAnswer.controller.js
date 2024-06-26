@@ -3,6 +3,9 @@ const { StatusCodes, getReasonPhrase } = require('http-status-codes');
 const { v4: uuid } = require('uuid');
 const UserAnswer = require('../models/userAnswers.model');
 const Achievement = require('../models/achievements.model');
+const { getIo } = require('../config/socketIo.config');
+
+const io = getIo();
 
 exports.addUserAnswers = async (req, res) => {
   try {
@@ -32,7 +35,7 @@ exports.addUserAnswers = async (req, res) => {
       id: idAchievement,
       user_id,
       test_id,
-      parts: parts.join(''),
+      parts: parts,
       date: start_time,
       complete_time,
       total_corrects,
@@ -42,6 +45,7 @@ exports.addUserAnswers = async (req, res) => {
       type,
       title
     };
+    io.emit('change-result', idAchievement);
     await Achievement.create(newAchievement);
     await UserAnswer.create(answersAdd);
     res.status(StatusCodes.CREATED).send({
